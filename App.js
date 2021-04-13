@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -25,6 +25,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -52,12 +55,22 @@ const Section = ({children, title}): Node => {
   );
 };
 
+const config = require('./firebase.json');
+
+function initFb() {
+  const fb = firebase.initializeApp(config, 'foobar');
+  const auth = fb.auth();
+  auth.onIdTokenChanged(f => Promise.resolve(f).then(console.log));
+}
+
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  useEffect(initFb, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
